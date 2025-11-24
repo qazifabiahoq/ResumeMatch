@@ -4,6 +4,8 @@
 
 Get instant insights into how well your resume matches any job description. Advanced AI analyzes your resume and provides actionable recommendations to improve your chances of getting hired.
 
+**🚀 [Try it now - https://resumematchapp.streamlit.app/](https://resumematchapp.streamlit.app/)**
+
 ## Features
 
 - **Smart Matching**: AI-powered compatibility scoring (0-100%)
@@ -15,7 +17,7 @@ Get instant insights into how well your resume matches any job description. Adva
 
 ## How to Use
 
-1. Visit the app (deployed on Streamlit Cloud)
+1. **Visit [resumematchapp.streamlit.app](https://resumematchapp.streamlit.app/)**
 2. Upload your resume (PDF or DOCX)
 3. Paste the job description
 4. Click "Analyze Resume"
