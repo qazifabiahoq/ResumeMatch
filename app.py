@@ -375,7 +375,22 @@ def analyze_resume(resume_text, job_description):
         analysis['keyword_matches'] = keyword_analysis['matched_keywords']
         analysis['missing_skills'] = keyword_analysis['missing_keywords']
         
-        ats_score = min(int(keyword_analysis['match_percentage'] * 0.75 + 25), 100)
+        # FIXED: Better ATS calculation based on keyword matching
+        base_ats = keyword_analysis['match_percentage']
+        
+        # Bonus points for good resume structure
+        resume_lower = resume_text.lower()
+        ats_bonus = 0
+        if 'experience' in resume_lower or 'work' in resume_lower:
+            ats_bonus += 5
+        if 'education' in resume_lower or 'degree' in resume_lower:
+            ats_bonus += 5
+        if 'skills' in resume_lower:
+            ats_bonus += 5
+        if bool(re.search(r'\d+%|\d+ years|\d+\+', resume_text)):
+            ats_bonus += 5
+        
+        ats_score = min(int(base_ats + ats_bonus), 100)
         
         if ats_score < 70:
             ats_issues = ["Low keyword density", "May not pass automated screening"]
@@ -411,7 +426,22 @@ def analyze_resume(resume_text, job_description):
         analysis['keyword_matches'] = keyword_analysis['matched_keywords']
         analysis['missing_skills'] = keyword_analysis['missing_keywords']
         
-        ats_score = min(int(keyword_analysis['match_percentage'] * 0.75 + 25), 100)
+        # FIXED: Better ATS calculation
+        base_ats = keyword_analysis['match_percentage']
+        
+        # Bonus points for good resume structure
+        resume_lower = resume_text.lower()
+        ats_bonus = 0
+        if 'experience' in resume_lower or 'work' in resume_lower:
+            ats_bonus += 5
+        if 'education' in resume_lower or 'degree' in resume_lower:
+            ats_bonus += 5
+        if 'skills' in resume_lower:
+            ats_bonus += 5
+        if bool(re.search(r'\d+%|\d+ years|\d+\+', resume_text)):
+            ats_bonus += 5
+        
+        ats_score = min(int(base_ats + ats_bonus), 100)
         
         if ats_score < 60:
             ats_issues = ["Limited keyword optimization", "May struggle with ATS"]
