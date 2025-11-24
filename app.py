@@ -158,13 +158,28 @@ def extract_text_from_docx(file):
 
 def extract_keywords(text):
     """Extract keywords from text"""
+    # Extended stop words including common business jargon
     stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 
                   'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be',
                   'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-                  'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those'}
+                  'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those',
+                  'we', 'our', 'your', 'their', 'you', 'they', 'them', 'us', 'all',
+                  'who', 'what', 'when', 'where', 'which', 'how', 'why', 'any', 'some',
+                  'more', 'most', 'other', 'such', 'into', 'through', 'during', 'before',
+                  'after', 'above', 'below', 'between', 'under', 'again', 'further',
+                  'then', 'once', 'here', 'there', 'up', 'out', 'if', 'about', 'than',
+                  'also', 'very', 'too', 'can', 'just', 'dont', 'now', 'so', 'than',
+                  'work', 'working', 'worked', 'company', 'team', 'role', 'position',
+                  'job', 'career', 'opportunity', 'responsibilities', 'requirements',
+                  'qualifications', 'skills', 'knowledge', 'familiarity', 'understanding',
+                  'ability', 'strong', 'excellent', 'good', 'experience', 'years',
+                  'looking', 'seeking', 'required', 'preferred', 'plus', 'bonus',
+                  'etc', 'including', 'related', 'various', 'multiple', 'within'}
     
     words = re.findall(r'\b[a-zA-Z][a-zA-Z0-9\.\-]*\b', text.lower())
-    keywords = [w for w in words if w not in stop_words and len(w) > 2]
+    
+    # Filter: length > 3, not in stop words, not just numbers
+    keywords = [w for w in words if w not in stop_words and len(w) > 3 and not w.isdigit()]
     
     from collections import Counter
     return Counter(keywords)
@@ -266,29 +281,45 @@ def rule_based_analysis(resume_text, job_description, keyword_analysis):
     
     keyword_score = min(keyword_analysis['match_percentage'], 100)
     
-    has_experience = any(word in resume_lower for word in ['experience', 'work', 'employment', 'worked'])
+    has_experience = any(word in resume_lower for word in ['experience', 'worked', 'employment', 'intern', 'analyst'])
     has_education = any(word in resume_lower for word in ['education', 'degree', 'university', 'bachelor', 'master'])
-    has_skills = any(word in resume_lower for word in ['skills', 'technologies', 'proficient'])
-    has_achievements = any(word in resume_lower for word in ['achieved', 'improved', 'increased', 'reduced', 'led'])
+    has_skills = any(word in resume_lower for word in ['skills', 'technologies', 'proficient', 'python', 'sql'])
+    has_achievements = any(word in resume_lower for word in ['achieved', 'improved', 'increased', 'reduced', 'led', 'developed'])
     has_metrics = bool(re.search(r'\d+%|\$\d+|\d+\+', resume_text))
     
+    # Improved scoring
     experience_score = 85 if (has_experience and has_achievements) else (70 if has_experience else 45)
-    education_score = 80 if has_education else 50
-    skills_score = min(int(keyword_score * 0.9 + 15), 100)
+    education_score = 85 if has_education else 50
+    
+    # Better skills score based on keyword matching
+    matched_count = len(keyword_analysis['matched_keywords'])
+    if matched_count >= 15:
+        skills_score = 95
+    elif matched_count >= 10:
+        skills_score = 85
+    elif matched_count >= 7:
+        skills_score = 75
+    elif matched_count >= 5:
+        skills_score = 65
+    else:
+        skills_score = max(int(keyword_score * 0.8), 40)
     
     if has_metrics:
         experience_score = min(experience_score + 10, 100)
     
+    # Recalculated overall score with better weights
     overall_score = int(
-        (keyword_score * 0.40) + 
+        (keyword_score * 0.35) + 
         (experience_score * 0.30) + 
-        (skills_score * 0.20) + 
+        (skills_score * 0.25) + 
         (education_score * 0.10)
     )
     
     strengths = []
-    if len(keyword_analysis['matched_keywords']) >= 8:
+    if len(keyword_analysis['matched_keywords']) >= 10:
         strengths.append(f"Excellent keyword alignment with {len(keyword_analysis['matched_keywords'])} key terms")
+    elif len(keyword_analysis['matched_keywords']) >= 7:
+        strengths.append(f"Strong keyword coverage with {len(keyword_analysis['matched_keywords'])} relevant terms")
     elif len(keyword_analysis['matched_keywords']) >= 5:
         strengths.append(f"Good keyword coverage with {len(keyword_analysis['matched_keywords'])} relevant terms")
     
@@ -307,10 +338,14 @@ def rule_based_analysis(resume_text, job_description, keyword_analysis):
         strengths.append("Resume is well-formatted and professional")
     
     weaknesses = []
-    if len(keyword_analysis['missing_keywords']) >= 7:
-        weaknesses.append(f"Missing {len(keyword_analysis['missing_keywords'])} important keywords")
-    elif len(keyword_analysis['missing_keywords']) >= 4:
-        weaknesses.append(f"Could add {len(keyword_analysis['missing_keywords'])} more relevant terms")
+    missing_count = len(keyword_analysis['missing_keywords'])
+    
+    if missing_count >= 10:
+        weaknesses.append(f"Missing {missing_count} important technical terms from job posting")
+    elif missing_count >= 7:
+        weaknesses.append(f"Could incorporate {missing_count} additional relevant keywords")
+    elif missing_count >= 4:
+        weaknesses.append(f"Consider adding {missing_count} more technical terms from job description")
     
     if not has_metrics:
         weaknesses.append("Add quantifiable achievements with numbers and percentages")
@@ -318,35 +353,41 @@ def rule_based_analysis(resume_text, job_description, keyword_analysis):
     if not has_achievements:
         weaknesses.append("Include more action verbs and accomplishments")
     
-    if keyword_score < 50:
-        weaknesses.append("Needs better alignment with job requirements")
+    if keyword_score < 40:
+        weaknesses.append("Needs significantly better alignment with job requirements")
+    elif keyword_score < 60:
+        weaknesses.append("Could improve keyword alignment with job posting")
     
     if len(weaknesses) < 3:
-        weaknesses.append("Consider adding more specific examples")
+        weaknesses.append("Consider tailoring resume more specifically to this role")
     
     recommendations = []
-    if len(keyword_analysis['missing_keywords']) > 0:
+    if len(keyword_analysis['missing_keywords']) > 0 and len(keyword_analysis['missing_keywords']) <= 10:
         top = ', '.join(keyword_analysis['missing_keywords'][:3])
-        recommendations.append(f"Add these keywords if applicable: {top}")
+        recommendations.append(f"Incorporate these technical terms if applicable: {top}")
+    elif len(keyword_analysis['missing_keywords']) > 10:
+        recommendations.append(f"Add more technical keywords from the job description to improve ATS matching")
     
     if not has_metrics:
         recommendations.append("Add specific numbers and percentages to quantify impact")
     else:
-        recommendations.append("Expand quantifiable results across all sections")
+        recommendations.append("Expand quantifiable results across all experience sections")
     
-    if keyword_score < 70:
-        recommendations.append("Mirror the job description language in your resume")
+    if keyword_score < 60:
+        recommendations.append("Mirror the job description's technical terminology in your resume")
     else:
-        recommendations.append("Feature most relevant experience at the top")
+        recommendations.append("Emphasize most relevant technical experience in the top section")
     
     if overall_score >= 80:
         assessment = "Excellent match. Strong alignment with job requirements and relevant qualifications."
-    elif overall_score >= 65:
-        assessment = "Good match. Solid qualifications with room for targeted keyword optimization."
+    elif overall_score >= 70:
+        assessment = "Very good match. Your background aligns well with most key requirements."
+    elif overall_score >= 60:
+        assessment = "Good match. Solid qualifications with room for targeted optimization."
     elif overall_score >= 50:
-        assessment = "Moderate match. Relevant elements present but needs better highlighting of skills."
+        assessment = "Moderate match. Relevant elements present but needs better highlighting of applicable skills."
     else:
-        assessment = "Fair match. Significantly tailor resume to emphasize transferable skills."
+        assessment = "Fair match. Consider significantly tailoring resume to emphasize transferable technical skills."
     
     return {
         'match_score': overall_score,
