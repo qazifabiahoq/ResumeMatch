@@ -4,7 +4,7 @@
 
 Get instant insights into how well your resume matches any job description. Advanced AI analyzes your resume and provides actionable recommendations to improve your chances of getting hired.
 
-**🚀 [Try it now - https://resumematchapp.streamlit.app/](https://resumematchapp.streamlit.app/)**
+** [Try it now - https://resumematchapp.streamlit.app/](https://resumematchapp.streamlit.app/)**
 
 ## Features
 
