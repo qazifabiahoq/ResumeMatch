@@ -560,7 +560,6 @@ def main():
         # Results
         st.markdown("---")
         st.markdown("## Analysis Results")
-        st.markdown(f"*{datetime.now().strftime('%B %d, %Y at %I:%M %p')}*")
         
         # Overall Score
         st.markdown('<div class="section-header">Overall Match Score</div>', unsafe_allow_html=True)
