@@ -49,12 +49,12 @@ st.markdown("""
     }
     
     .section-header {
-        color: #1e293b;
+        color: #0f172a;
         font-size: 1.5rem;
-        font-weight: 600;
+        font-weight: 700;
         margin-top: 2rem;
         margin-bottom: 1rem;
-        border-bottom: 2px solid #e2e8f0;
+        border-bottom: 3px solid #2563eb;
         padding-bottom: 0.5rem;
     }
     
@@ -96,6 +96,7 @@ st.markdown("""
         padding: 1rem;
         margin: 0.5rem 0;
         border-radius: 4px;
+        color: #1e293b;
     }
     
     .app-header {
@@ -567,7 +568,7 @@ def main():
         
         # Assessment
         st.markdown('<div class="section-header">Overall Assessment</div>', unsafe_allow_html=True)
-        st.markdown(f"<div class='metric-card'>{analysis['overall_assessment']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background-color: #f8fafc; border-left: 4px solid #2563eb; padding: 1rem; margin: 0.5rem 0; border-radius: 4px; color: #1e293b; font-size: 1.05rem;'>{analysis['overall_assessment']}</div>", unsafe_allow_html=True)
         
         # Detailed Scores
         st.markdown('<div class="section-header">Detailed Analysis</div>', unsafe_allow_html=True)
@@ -609,7 +610,7 @@ def main():
             cols = st.columns(min(3, len(analysis['missing_skills'])))
             for idx, skill in enumerate(analysis['missing_skills']):
                 with cols[idx % len(cols)]:
-                    st.markdown(f"<div class='metric-card'><span class='neutral'>⚠</span> {skill}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 1rem; margin: 0.5rem 0; border-radius: 4px; color: #1e293b;'><span style='color: #ef4444; font-weight: 500;'>⚠</span> {skill}</div>", unsafe_allow_html=True)
         
         # Matched Keywords
         if analysis['keyword_matches']:
@@ -619,7 +620,7 @@ def main():
             keyword_cols = st.columns(min(3, len(analysis['keyword_matches'])))
             for idx, keyword in enumerate(analysis['keyword_matches']):
                 with keyword_cols[idx % len(keyword_cols)]:
-                    st.markdown(f"<div class='metric-card'><span class='strength'>✓</span> {keyword}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 1rem; margin: 0.5rem 0; border-radius: 4px; color: #1e293b;'><span style='color: #10b981; font-weight: 500;'>✓</span> {keyword}</div>", unsafe_allow_html=True)
         
         # ATS Compatibility
         st.markdown('<div class="section-header">ATS Compatibility</div>', unsafe_allow_html=True)
@@ -642,7 +643,7 @@ def main():
         st.markdown('<div class="section-header">Action Items</div>', unsafe_allow_html=True)
         
         for idx, rec in enumerate(analysis['recommendations'], 1):
-            st.markdown(f"<div class='metric-card'><strong>{idx}.</strong> {rec}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='background-color: #f8fafc; border-left: 4px solid #2563eb; padding: 1rem; margin: 0.5rem 0; border-radius: 4px; color: #1e293b;'><strong>{idx}.</strong> {rec}</div>", unsafe_allow_html=True)
         
         # Download
         st.markdown("---")
