@@ -32,7 +32,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Professional CSS - Blue Theme
+# Professional CSS - Blue Theme with Fixed Contrast
 st.markdown("""
 <style>
     .main {
@@ -117,6 +117,80 @@ st.markdown("""
     .app-subtitle {
         font-size: 1.1rem;
         opacity: 0.9;
+    }
+    
+    /* Fix contrast for file uploader and text areas */
+    .stFileUploader label, .stTextArea label {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+    
+    [data-testid="stFileUploadDropzone"] {
+        background-color: #f8fafc !important;
+        border: 2px dashed #2563eb !important;
+    }
+    
+    [data-testid="stFileUploadDropzone"] p {
+        color: #1e293b !important;
+    }
+    
+    [data-testid="stFileUploadDropzone"] small {
+        color: #64748b !important;
+    }
+    
+    .stTextArea textarea {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 2px solid #e2e8f0 !important;
+    }
+    
+    .stTextArea textarea::placeholder {
+        color: #94a3b8 !important;
+    }
+    
+    /* Ensure all text inputs are visible */
+    input, textarea, select {
+        color: #0f172a !important;
+    }
+    
+    /* File name display */
+    .stFileUploader [data-testid="stMarkdownContainer"] p {
+        color: #1e293b !important;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .stFileUploader label, .stTextArea label {
+            color: #f1f5f9 !important;
+        }
+        
+        [data-testid="stFileUploadDropzone"] {
+            background-color: #1e293b !important;
+            border: 2px dashed #60a5fa !important;
+        }
+        
+        [data-testid="stFileUploadDropzone"] p {
+            color: #e2e8f0 !important;
+        }
+        
+        [data-testid="stFileUploadDropzone"] small {
+            color: #94a3b8 !important;
+        }
+        
+        .stTextArea textarea {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            border: 2px solid #475569 !important;
+        }
+        
+        .section-header {
+            color: #f1f5f9;
+        }
+        
+        .stFileUploader [data-testid="stMarkdownContainer"] p {
+            color: #e2e8f0 !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
